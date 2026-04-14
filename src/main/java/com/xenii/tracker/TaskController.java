@@ -23,16 +23,18 @@ public class TaskController {
     @PostMapping
     public Task addTask(@RequestBody Task task) 
     {
-        Boolean completed = task.getCompleted() != null ? task.getCompleted() : false;
+        Boolean completed = task.getCompleted() != null ? task.getCompleted() : false; //Boolean object can be 
+                                                                                        // null is turned to false
         
-        Task newTask = new Task(nextId++, task.getTitle(), completed);
-        tasks.add(newTask);
+        Task newTask = new Task(nextId++, task.getTitle(), completed); //creates new task
+        tasks.add(newTask); // adds new task to task list
         return newTask;
     }
 
     @DeleteMapping("/{id}")
     public String deleteTask(@PathVariable Long id)
     {
+        //removes if task id is found in the tasks list
         tasks.removeIf((task) -> task.getId().equals(id));
         return "Task deleted";
     }
@@ -46,13 +48,13 @@ public class TaskController {
             if (task.getId().equals(id))
             {
                 Boolean completed = updatedTask.getCompleted() != null ? updatedTask.getCompleted() : false;
-
+                //if title not given a update instead turning to null, it retains its previous title
                 task.setTitle(updatedTask.getTitle() != null ? updatedTask.getTitle() : task.getTitle());
                 task.setCompleted(completed);
                 return task;
             }
         }
-        throw new RuntimeException("Task not found");
+        throw new RuntimeException("No task found"); //returns error if no tasks are found
     }
     
     
