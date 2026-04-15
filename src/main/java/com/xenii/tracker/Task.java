@@ -1,9 +1,14 @@
 package com.xenii.tracker;
 
+import java.lang.annotation.Native;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class Task {
@@ -12,7 +17,10 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @NotBlank(message = "A Title is required")
+    @NotNull(message = "A Title is required")
     private String title;
+
     private Boolean completed;
 
     public Task() {}

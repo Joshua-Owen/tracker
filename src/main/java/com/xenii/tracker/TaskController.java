@@ -2,59 +2,68 @@ package com.xenii.tracker;
 
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
 @RestController
 @RequestMapping("/tasks")
-public class TaskController {
+public class TaskController 
+{
+    private final TaskRepository repository;
 
-    private List<Task> tasks = new ArrayList<>();
-    private Long nextId = 1L;
+    public TaskController(TaskRepository repository)
+    {
+        this.repository = repository;
+    }
+
   
  
     @GetMapping
     public List<Task> getTasks() 
     {
-        return tasks;
+        //gets all tasks in the database
+        return repository.findAll();
     }
 
     @PostMapping
-    public Task addTask(@RequestBody Task task) 
+    public Task addTask(@Valid @RequestBody Task task) 
     {
-        Boolean completed = task.getCompleted() != null ? task.getCompleted() : false; //Boolean object can be 
-                                                                                        // null is turned to false
-        
-        Task newTask = new Task(nextId++, task.getTitle(), completed); //creates new task
-        tasks.add(newTask); // adds new task to task list
-        return newTask;
+        // if the boolean object is null sets it false
+        if (task.getCompleted() == null)
+        {
+            task.setCompleted(false);
+        }
+        //saves task in the database
+        return repository.save(task);
     }
 
     @DeleteMapping("/{id}")
-    public String deleteTask(@PathVariable Long id)
+    public void deleteTask(@PathVariable Long id)
     {
         //removes if task id is found in the tasks list
-        tasks.removeIf((task) -> task.getId().equals(id));
-        return "Task deleted";
+        repository.deleteById(id);
     }
 
     @PutMapping("/{id}")
     public Task putMethodName(@PathVariable Long id, @RequestBody Task updatedTask) 
     {
+        //gets the task in the database
+        Task task = repository.findById(id).orElseThrow(() -> new RuntimeException("No task found with id: "+ id));
         
-        for (Task task : tasks)
+        //updates either the title or progress if a non null value is given
+        if(updatedTask.getTitle() != null)
         {
-            if (task.getId().equals(id))
-            {
-                Boolean completed = updatedTask.getCompleted() != null ? updatedTask.getCompleted() : false;
-                //if title not given a update instead turning to null, it retains its previous title
-                task.setTitle(updatedTask.getTitle() != null ? updatedTask.getTitle() : task.getTitle());
-                task.setCompleted(completed);
-                return task;
-            }
+            task.setTitle(updatedTask.getTitle());
         }
-        throw new RuntimeException("No task found"); //returns error if no tasks are found
+        if (updatedTask.getCompleted() != null)
+        {
+            task.setCompleted(updatedTask.getCompleted());
+        }
+        //saves the updated task to the database
+        return repository.save(task);
     }
     
     
