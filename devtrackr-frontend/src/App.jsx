@@ -6,6 +6,7 @@ function App() {
   
   const addTask = () => {
     if(title.trim() === "") return;
+    
     console.log("Task Added:", title); 
     setTitle("");
   }
