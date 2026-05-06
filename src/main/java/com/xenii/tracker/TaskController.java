@@ -7,7 +7,7 @@ import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@CrossOrigin(origins = "http://localhost:5173") //avoid CORS error as front and backends are on different ports
 @RestController
 @RequestMapping("/tasks")
 public class TaskController 

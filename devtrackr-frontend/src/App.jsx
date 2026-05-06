@@ -4,10 +4,27 @@ function App() {
   
   const [title, setTitle] = useState("");
   
-  const addTask = () => {
+  const addTask = async () => {
     if(title.trim() === "") return;
     
-    console.log("Task Added:", title); 
+    //console.log("Task Added:", title); 
+    //setTitle("");
+
+    //sent JSON data in the form of a JSON string to backend
+    const response = await fetch("http://localhost:8080/tasks", {
+        method: "POST",
+        headers: {"Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title: title,
+        completed: false,
+      }),
+    });
+    //convert the server response back to JavaScript
+    const data = await response.json();
+
+    console.log("saved task", data);
+
     setTitle("");
   }
   return(
